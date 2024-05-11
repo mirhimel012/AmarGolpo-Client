@@ -29,9 +29,9 @@ const Register = () => {
      setRegisterError('');
      setSuccess('');
 
-     // password must be up to 6 character
-     if(password.length < 6){
-         setRegisterError('Password should be at least 6 characters')
+     // password must be less then 6 character
+     if(password.length > 6){
+         setRegisterError('Password should be less then 6 characters')
          setTimeout(() => {
              setRegisterError('');
          }, 4000);
