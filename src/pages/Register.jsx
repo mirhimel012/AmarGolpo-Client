@@ -117,7 +117,7 @@ const Register = () => {
             <span className="label-text">Password</span>
           </label>
           <input name="password" type={showPassword ? "text" : "password"} placeholder="password" className="input input-bordered" {...register("password", { required: true })} />
-          <span className="absolute mt-14 ml-64" onClick={()=> setShowPassword(!showPassword)}>
+          <span className="absolute mt-14 ml-72" onClick={()=> setShowPassword(!showPassword)}>
 	            {
 	              showPassword ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>
 	            }

@@ -1,6 +1,46 @@
-import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form"
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import useAuth from "../hooks/useAuth";
+import { useState } from "react";
 
 const Login = () => {
+  const {signInUser} = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+
+  const onSubmit = (data) => {
+    const{email, password} = data;
+    signInUser(email, password)
+      .then(result => {
+        console.log(result.user);// issue
+        // const from = '/';
+      })
+      .catch(error =>{
+        console.log(error)
+      })
+  };
+
+  // Social Login Auth Receive
+  const {googleLogin} = useAuth();
+
+  // navigation system
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = location ?.state || '/'
+
+  const handleSocialLogin = socialProvider => {
+    socialProvider().then(result => {
+      if(result.user){
+        navigate(from);
+      }
+    })
+  }
     return (
         <div className="m-10">
             <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-4xl">
@@ -14,7 +54,7 @@ const Login = () => {
             Welcome back!
         </p>
 
-        <a href="#" className="flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <button onClick={()=>handleSocialLogin(googleLogin)} className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <div className="px-4 py-2">
                 <svg className="w-6 h-6" viewBox="0 0 40 40">
                     <path d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z" fill="#FFC107" />
@@ -25,7 +65,7 @@ const Login = () => {
             </div>
 
             <span className="w-5/6 px-4 py-3 font-bold text-center">Sign in with Google</span>
-        </a>
+        </button>
 
         <div className="flex items-center justify-between mt-4">
             <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
@@ -36,30 +76,34 @@ const Login = () => {
             <span className="w-1/5 border-b dark:border-gray-400 lg:w-1/4"></span>
         </div>
 
-        <form className="card-body">
+        <form onSubmit={handleSubmit(onSubmit)} className="card-body">
         <div className="form-control">
           <label className="label">
             <span className="label-text">Email</span>
           </label>
-          <input name="email" type="email" placeholder="email" className="input input-bordered" />
+          <input name="email" type="email" placeholder="email" className="input input-bordered" {...register("email", { required: true })} />
+          {errors.email && <span className="text-red-500">This field is required</span>}
         </div>
         <div className="form-control">
           <label className="label">
             <span className="label-text">Password</span>
           </label>
-          <input name="password" type="password" placeholder="password" className="input input-bordered" />
+          <input name="password" type={showPassword ? "text" : "password"} placeholder="password" className="input input-bordered" {...register("password", { required: true })} />
+          <span className="absolute mt-14 ml-48 lg:ml-72" onClick={()=> setShowPassword(!showPassword)}>
+	            {
+	              showPassword ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>
+	            }
+            </span>
+          {errors.password && <span className="text-red-500">This field is required</span>}
+          <label className="label">
+            <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+          </label>
         </div>
         <div className="form-control mt-6">
           <button className="btn btn-primary">Login</button>
         </div>
-        <div className="flex items-center justify-between mt-4">
-            <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-
-            <div className="text-center text-base mt-2">      
-	       <p className="text-black">New Here? Please <Link className="text-lime-600 font-bold" to="/register">Register</Link></p>
-            </div>
-
-            <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
+        <div className="text-center text-xl mt-2">      
+	       <p>New Here? Please <Link className="text-lime-600 font-bold" to="/register">Register</Link></p>
         </div>
       </form>
     </div>
