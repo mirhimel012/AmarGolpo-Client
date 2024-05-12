@@ -44,7 +44,7 @@ const [theme, setTheme] = useState('light')
     </div>
     <div className="flex gap-1">
         <Link to="/"><img className="w-14 h-14" src="https://i.ibb.co/4dDWk3Q/books.png" alt="" /></Link>
-        <h2 className="text-2xl font-bold items-center md:text-4xl">Spellbound</h2>
+        <Link to="/" className="text-2xl flex font-bold items-center md:text-4xl">Spellbound</Link>
     </div>
   </div>
   <div className="navbar-center hidden lg:flex">
