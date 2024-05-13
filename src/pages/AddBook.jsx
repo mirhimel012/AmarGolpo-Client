@@ -1,11 +1,57 @@
-
+import Swal from "sweetalert2";
 const AddBook = () => {
+    const handleAddBook = (event) => {
+        event.preventDefault();
+    
+        const form = event.target;
+    
+        const name = form.book_name.value;
+        const author = form.author_name.value;
+        const category = form.category.value;
+        const rating = form.rating.value;
+        const photo = form.photo.value;
+        const quantity = form.quantity.value;
+        const message = form.querySelector("#message").value;
+    
+        const newBook = {
+          name,
+          author,
+          category,
+          rating,
+          photo,
+          quantity,
+          message,
+        };
+        console.log(newBook);
+    
+        // send data to the server
+        fetch("http://localhost:5000/book", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(newBook),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.insertedId) {
+              Swal.fire({
+                title: "Success!",
+                text: "Book Added Successfully",
+                icon: "success",
+                confirmButtonText: "Cool",
+              });
+            }
+          });
+      };
+
     return (
         <div className="bg-[#eeedf3] p-24 -mt-12">
       <h2 className="text-xl font-extrabold text-purple-600 md:text-3xl">
         Add a Book
       </h2>
-      <form>
+      <form onSubmit={handleAddBook}>
         {/* book name and author name*/}
         <div className="md:flex mb-6">
           <div className="form-control md:w-1/2">

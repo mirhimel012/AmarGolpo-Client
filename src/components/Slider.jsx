@@ -26,7 +26,7 @@ const Slider = () => {
     <div>
       <div className="carousel w-full h-svh">
         <div id={`slide1`} className={`carousel-item relative w-full h-fit ${currentSlide === 1 ? 'block' : 'hidden'}`}>
-            <img src="https://i.ibb.co/DRwHvfs/pexels-technobulka-2908984.jpg" className="w-full h-fit" />        
+            <img src="https://i.ibb.co/KDNnF8s/pexels-element5-1370298.jpg" className="w-full h-fit" />        
         </div>
         <div id={`slide2`} className={`carousel-item relative w-full h-fit ${currentSlide === 2 ? 'block' : 'hidden'}`}>
             <img src="https://i.ibb.co/xJMTfGq/pexels-pixabay-256455.jpg" className="w-full h-fit"/>
