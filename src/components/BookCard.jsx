@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 const BookCard = ({ book, books, setbooks }) => {
   const {
+    _id,
     name,
     author,
     category,
@@ -15,7 +16,6 @@ const BookCard = ({ book, books, setbooks }) => {
 
   return (
     <div className="border rounded-2xl p-4 m-2 hover:scale-105 border-opacity-30 border-primary hover:border-secondary  ">
-{/* to={`/blog/${blog.bookId}`}  */}
             <Link className="max-w-sm mx-auto dark:bg-gray-50">
                 <img role="presentation" className="object-cover w-full rounded h-screen  dark:bg-gray-500" src={photo} />
                 
@@ -30,6 +30,16 @@ const BookCard = ({ book, books, setbooks }) => {
                             <span>{rating}</span>
                         </div>
                     </div>
+
+                    <div className="card-actions justify-end">
+          {/* Use Link component to navigate to Details page */}
+          <Link
+            to={`/details/${_id}`} // Link to the Details page with spot ID
+            className="btn btn-primary"
+          >
+            View Details!
+          </Link>
+        </div>
                 </div>
             </Link>
                 
