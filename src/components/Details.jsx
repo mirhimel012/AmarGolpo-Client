@@ -37,6 +37,9 @@ const Details = () => {
                     
                 </div>
             </div>
+            <div className="card-actions justify-center mt-8">
+                <button className="bg-blue-500 text-white px-4 py-2 rounded mr-2">Borrow</button>
+            </div>
         </div>
   );
 };
