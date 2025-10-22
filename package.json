@@ -1,5 +1,6 @@
 {
-  "name": "spellbound-library-client",
+  "name": "amargolpo-client",
+  "description": "AmarGolpo (আমারগল্প) — Every Story Matters (Share and read personal stories and blogs)",
   "private": true,
   "version": "0.0.0",
   "type": "module",
