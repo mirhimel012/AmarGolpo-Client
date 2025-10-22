@@ -11,7 +11,7 @@ const Footer = () => {
                 <div className="flex items-center justify-center w-12 h-12 rounded-full">
                     <Link to="/"><img src="https://i.ibb.co/4dDWk3Q/books.png" alt="" /></Link>
 				</div>
-				<span className="self-center text-2xl font-semibold">Spellbound Library</span>
+				<span className="self-center text-2xl font-semibold">আমারগল্প</span>
 				</a>
 			</div>
 			<div className="col-span-6 text-center md:text-left md:col-span-3">
