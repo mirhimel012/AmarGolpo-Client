@@ -52,10 +52,15 @@ const router = createBrowserRouter([
                 element: <Register></Register>,
             },
             {
-                path: '/details/:id',
-                element: <Details></Details>,
-                loader: ({params}) => fetch(`https://amar-golpo-server.vercel.app/books/${params.id}`)
-            }
+  path: '/details/:id',
+  element: <Details />,
+  loader: async ({ params }) => {
+    const res = await fetch(`https://amar-golpo-server.vercel.app/books/${params.id}`);
+    if (!res.ok) throw new Error("Failed to fetch book details");
+    return res.json();
+  }
+}
+
         ]
     }
 ]);

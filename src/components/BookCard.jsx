@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-// import "animate.css";
-// import Swal from "sweetalert2";
 
-const BookCard = ({ book, books, setbooks }) => {
+const BookCard = ({ book }) => {
   const {
     _id,
     name,
@@ -10,40 +8,66 @@ const BookCard = ({ book, books, setbooks }) => {
     category,
     rating,
     photo,
-    quantity,
-    message,
+    message,       // story preview
+    mood,          // new field
+    readingTime,   // new field
+    likes,         // new field
+    createdAt,     // new field
   } = book;
 
+  // Preview text for long stories
+  const preview = message?.length > 180 ? message.slice(0, 180) + "..." : message;
+
   return (
-    <div className="border rounded-2xl p-4 m-2 hover:scale-105 border-opacity-30 border-primary hover:border-secondary  ">
-            <Link className="max-w-sm mx-auto dark:bg-gray-50">
-                <img role="presentation" className="object-cover w-full rounded h-screen  dark:bg-gray-500" src={photo} />
-                
-                <div className="p-6 space-y-2">
-                    <h3 className="text-3xl font-bold">{name}</h3>
-                    <h3 className="text-lg font-semibold">By: {author}</h3>
-                    <h5 className="border-b-2 m-2 border-dashed mx-auto"></h5>
+    <div className="bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out flex flex-col">
+      {/* Story Image */}
+      <div className="h-64 w-full overflow-hidden rounded-t-2xl">
+        <img
+          src={photo}
+          alt={name}
+          className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
+        />
+      </div>
 
-                    <div className="flex justify-between text-lg">
-                        <span><span className="font-semibold">Category: </span>{category}</span>
-                        <div className="flex items-center gap-2">
-                            <span>{rating}</span>
-                        </div>
-                    </div>
+      {/* Story Info */}
+      <div className="p-5 flex flex-col justify-between flex-1">
+        {/* Title and Author */}
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">By {author}</p>
 
-                    <div className="card-actions justify-end">
-          {/* Use Link component to navigate to Details page */}
+          {/* Story preview */}
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-3">
+            {preview || "No story preview available."}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 text-xs mb-3">
+            <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-800">{category || "General"}</span>
+            {mood && <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">{mood}</span>}
+            {readingTime && <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">{readingTime}</span>}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-4 flex flex-col sm:flex-row sm:justify-between items-center gap-2">
+          {/* Likes and rating */}
+          <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+            <span>❤️ {likes || 0}</span>
+            {rating && <span>⭐ {rating}</span>}
+            <span className="ml-2 text-gray-400 text-xs">{createdAt ? new Date(createdAt).toLocaleDateString() : "Recently Added"}</span>
+          </div>
+
+          {/* Read Story button */}
           <Link
-            to={`/details/${_id}`} // Link to the Details page with spot ID
-            className="btn btn-primary"
+            to={`/details/${_id}`}
+            className="bg-gradient-to-r from-pink-500 to-red-400 hover:from-red-500 hover:to-pink-500 text-white font-semibold px-4 py-2 rounded-lg transition duration-300"
           >
-            View Details!
+            Read Story →
           </Link>
         </div>
-                </div>
-            </Link>
-                
-        </div>
+      </div>
+    </div>
   );
 };
 
