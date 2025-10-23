@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
-const PrivateBorrowedBooks = ({children}) => {
+const PrivateMyList = ({children}) => {
     const {user} = useAuth();
     const location = useLocation();
     if(!user){
@@ -14,4 +14,4 @@ const PrivateBorrowedBooks = ({children}) => {
     );
 };
 
-export default PrivateBorrowedBooks;
+export default PrivateMyList;

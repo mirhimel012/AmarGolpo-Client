@@ -1,171 +1,164 @@
 import Swal from "sweetalert2";
-const AddBook = () => {
-    const handleAddBook = (event) => {
-        event.preventDefault();
-    
-        const form = event.target;
-    
-        const name = form.book_name.value;
-        const author = form.author_name.value;
-        const category = form.category.value;
-        const rating = form.rating.value;
-        const photo = form.photo.value;
-        const quantity = form.quantity.value;
-        const message = form.querySelector("#message").value;
-    
-        const newBook = {
-          name,
-          author,
-          category,
-          rating,
-          photo,
-          quantity,
-          message,
-        };
-        console.log(newBook);
-    
-        // send data to the server
-        fetch("http://localhost:5000/book", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(newBook),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            if (data.insertedId) {
-              Swal.fire({
-                title: "Success!",
-                text: "Book Added Successfully",
-                icon: "success",
-                confirmButtonText: "Cool",
-              });
-            }
-          });
-      };
 
-    return (
-        <div className="bg-[#eeedf3] p-24 -mt-12">
-      <h2 className="text-xl font-extrabold text-purple-600 md:text-3xl">
-        Add a Book
-      </h2>
-      <form onSubmit={handleAddBook}>
-        {/* book name and author name*/}
-        <div className="md:flex mb-6">
-          <div className="form-control md:w-1/2">
-            <label className="label">
-              <span className="label-text font-medium">Book Name</span>
-            </label>
-            <label className="input-group">
+const AddBook = () => {
+  const handleAddBook = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+
+    const newBook = {
+      name: form.book_name.value,
+      author: form.author_name.value,
+      category: form.category.value,
+      rating: form.rating.value,
+      photo: form.photo.value,
+      quantity: form.quantity.value,
+      message: form.querySelector("#message").value,
+    };
+
+    console.log(newBook);
+
+    // send data to server
+    fetch("http://localhost:5000/book", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(newBook),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          Swal.fire({
+            title: "Success!",
+            text: "Book Added Successfully",
+            icon: "success",
+            confirmButtonText: "Cool",
+          });
+          form.reset();
+        }
+      });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-r from-purple-50 via-white to-blue-50 py-16 px-6">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-12">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-purple-700 mb-8 text-center">
+          Add a New Book
+        </h2>
+
+        <form onSubmit={handleAddBook} className="space-y-6">
+          {/* Book Name & Author */}
+          <div className="md:flex gap-6">
+            <div className="flex-1 relative">
               <input
                 type="text"
                 name="book_name"
-                placeholder="Book Name"
-                className="input input-bordered w-full"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
               />
-            </label>
-          </div>
-          <div className="form-control md:w-1/2 ml-4">
-            <label className="label">
-              <span className="label-text font-medium">Author Name</span>
-            </label>
-            <label className="input-group">
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Book Name
+              </label>
+            </div>
+            <div className="flex-1 relative">
               <input
                 type="text"
                 name="author_name"
-                placeholder="Author Name"
-                className="input input-bordered w-full"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
               />
-            </label>
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Author Name
+              </label>
+            </div>
           </div>
-        </div>
-        {/* catagory and ratting */}
-        <div className="md:flex mb-6">
-          <div className="form-control md:w-1/2">
-            <label className="label">
-              <span className="label-text font-medium">Category</span>
-            </label>
-            <label className="input-group">
+
+          {/* Category & Rating */}
+          <div className="md:flex gap-6">
+            <div className="flex-1 relative">
               <input
                 type="text"
                 name="category"
-                placeholder="Category"
-                className="input input-bordered w-full"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
               />
-            </label>
-          </div>
-          <div className="form-control md:w-1/2 ml-4">
-            <label className="label">
-              <span className="label-text font-medium">Rating</span>
-            </label>
-            <label className="input-group">
-              <input
-                type="text"
-                name="rating"
-                placeholder="Rating"
-                className="input input-bordered w-full"
-              />
-            </label>
-          </div>
-        </div>
-        {/* image and quantity */}
-        <div className="md:flex mb-6">
-        <div className="form-control md:w-1/2">
-            <label className="label">
-              <span className="label-text font-medium">Photo URL</span>
-            </label>
-            <label className="input-group">
-              <input
-                type="text"
-                name="photo"
-                placeholder="Photo URL"
-                className="input input-bordered w-full"
-              />
-            </label>
-          </div>
-          <div className="form-control md:w-1/2 ml-4">
-            <label className="label">
-              <span className="label-text font-medium">
-              Quantity
-              </span>
-            </label>
-            <label className="input-group">
-              <input
-                type="text"
-                name="quantity"
-                placeholder="Quantity"
-                className="input input-bordered w-full"
-              />
-            </label>
-          </div>
-        </div>
-        {/* short description */}
-        <form id="form">
-          <div className="mb-6">
-            <div className="form-control w-full">
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Short Description
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Category
               </label>
-              <textarea
-                id="message"
-                rows="4"
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Write your thoughts here..."
-              ></textarea>
+            </div>
+            <div className="flex-1 relative">
+              <input
+                type="number"
+                name="rating"
+                min="0"
+                max="5"
+                step="0.1"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
+              />
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Rating
+              </label>
             </div>
           </div>
+
+          {/* Photo URL & Quantity */}
+          <div className="md:flex gap-6">
+            <div className="flex-1 relative">
+              <input
+                type="url"
+                name="photo"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
+              />
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Photo URL
+              </label>
+            </div>
+            <div className="flex-1 relative">
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                required
+                className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder=" "
+              />
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+                Quantity
+              </label>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="relative">
+            <textarea
+              name="message"
+              id="message"
+              rows="4"
+              required
+              className="peer w-full px-4 pt-6 pb-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder=" "
+            ></textarea>
+            <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-purple-600 peer-focus:text-sm">
+              Short Description
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white text-lg font-semibold rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300"
+          >
+            Add Book
+          </button>
         </form>
-               
-        <input
-          type="submit"
-          value="Add Book"
-          className="btn text-xl w-full bg-slate-500 hover:bg-green-600 text-white"
-        />
-      </form>
+      </div>
     </div>
-    );
+  );
 };
 
 export default AddBook;

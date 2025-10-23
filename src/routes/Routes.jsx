@@ -3,15 +3,15 @@ import Root from "../layouts/Root";
 import Home from "../pages/Home";
 import AddBook from "../pages/AddBook";
 import AllBooks from "../pages/AllBooks";
-import BorrowedBooks from "../pages/BorrowedBooks";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Details from "../components/Details";
 import PrivateAddBook from "../pages/PrivateAddBook";
 import PrivateAllBooks from "../pages/PrivateAllBooks";
-import PrivateBorrowedBooks from "../pages/PrivateBorrowedBooks";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
+import PrivateMyList from "../pages/PrivateMyList";
+import MyList from "../pages/MyList";
 
 const router = createBrowserRouter([
     {
@@ -23,17 +23,17 @@ const router = createBrowserRouter([
                 element: <Home></Home>,
             },
             {
-                path: '/addbook',
-                element: <PrivateAddBook><AddBook></AddBook></PrivateAddBook>,  
-            },
-            {
-                path: '/allbooks',
+                path: '/bookshelf',
                 element: <PrivateAllBooks><AllBooks></AllBooks></PrivateAllBooks>,
                 loader: () => fetch('http://localhost:5000/book')
             },
             {
-                path: '/borrowedbooks',
-                element: <PrivateBorrowedBooks><BorrowedBooks></BorrowedBooks></PrivateBorrowedBooks>,
+                path: '/shareStory',
+                element: <PrivateAddBook><AddBook></AddBook></PrivateAddBook>,  
+            },
+            {
+                path: '/mylist',
+                element: <PrivateMyList><MyList></MyList></PrivateMyList>,
             },
             {
                 path: '/about',
