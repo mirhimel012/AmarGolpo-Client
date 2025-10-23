@@ -19,7 +19,7 @@ const AddBook = () => {
     console.log(newBook);
 
     // send data to server
-    fetch("http://localhost:5000/book", {
+    fetch("https://amar-golpo-server.vercel.app/books", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(newBook),

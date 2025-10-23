@@ -25,7 +25,7 @@ const router = createBrowserRouter([
             {
                 path: '/bookshelf',
                 element: <PrivateAllBooks><AllBooks></AllBooks></PrivateAllBooks>,
-                loader: () => fetch('http://localhost:5000/book')
+                loader: () => fetch('https://amar-golpo-server.vercel.app/books')
             },
             {
                 path: '/shareStory',
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
             {
                 path: '/details/:id',
                 element: <Details></Details>,
-                loader: ({params}) => fetch(`http://localhost:5000/book/${params.id}`)
+                loader: ({params}) => fetch(`https://amar-golpo-server.vercel.app/books/${params.id}`)
             }
         ]
     }
