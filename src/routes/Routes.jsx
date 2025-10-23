@@ -11,6 +11,7 @@ import PrivateAddBook from "../pages/PrivateAddBook";
 import PrivateAllBooks from "../pages/PrivateAllBooks";
 import PrivateBorrowedBooks from "../pages/PrivateBorrowedBooks";
 import About from "../pages/About";
+import Contact from "../pages/Contact";
 
 const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: '/about',
                 element: <About></About>,
+            },
+            {
+                path: '/contact',
+                element: <Contact></Contact>,
             },
             {
                 path: '/login',
