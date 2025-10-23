@@ -1,81 +1,100 @@
 import React, { useEffect } from "react";
 import AOS from "aos";
-import { Reveal } from "react-awesome-reveal";
+import "aos/dist/aos.css";
+import { motion } from "framer-motion";
+
+const quotes = [
+  {
+    author: "ডঃ এপিজি আব্দুল কালাম",
+    text: "পাখি পোষলাম উড়ে গেল, কাঠবিড়ালি পোষলাম পালিয়ে গেলো, এরপর আমি একটা গাছ লাগালাম, পাখি ও কাঠবিড়ালি দুটোই ফিরে এলো",
+  },
+  {
+    author: "হিমেল মীর",
+    text: "আপনার কুকুর যদি মানুষকে বাদ দিয়ে আপনাকেই ঘেউ ঘেউ করা শুরু করে তাহলে বুঝবেন আপনার কুকুরকে অন্য কেউ খাবার খাওয়াচ্ছে",
+  },
+  {
+    author: "হুমায়ূন আহমেদ",
+    text: "পায়ের কাঁটার দিকে বার বার নজর দিলে হাঁটার আনন্দ উপভোগ করা যায় না",
+  },
+  {
+    author: "ইসলামী নীতিবাক্য",
+    text: "আপনি নামাজ পরুন আপনার নামাজ পড়ার পূর্বে",
+  },
+  {
+    author: "বুদ্ধদেব বসু",
+    text: "মানুষ যত বড় স্বপ্ন দেখে, তত বড় হয় তার জীবন",
+  },
+   {
+    author: "প্রেরণামূলক",
+    text: "জুতা চেটে তৈরি করা পরিচয়ের থেকে জুতা ক্ষয় করে তৈরি করা পরিচয় অনেক সম্মানজনক এবং মর্যাদাপূর্ণ",
+  },
+  {
+    author: "কাজী নজরুল ইসলাম",
+    text: "অন্যায়ের বিরুদ্ধে প্রতিবাদই মানবতার প্রথম শর্ত",
+  },
+ {
+    author: "ড. মুহাম্মদ শহীদুল্লাহ",
+    text: "যুগের বাস্তবতায় জাতির ধনের ভান্ডার জ্ঞানের উপর নির্ভর করে",
+  },
+ {
+    author: "চাণক্য নীতির ভাবধারার অংশ",
+    text: "ক্ষতিকর সত্যের চেয়ে উপকারী মিথ্যা অনেক ভালো",
+  },
+  
+];
 
 const Quote = () => {
   useEffect(() => {
-    AOS.init(); // Initialize AOS
+    AOS.init({ duration: 800, once: true });
   }, []);
 
   return (
-    <div>
-      <section className="bg-gray-100 rounded-2xl py-12 px-4">
-        <div className="container mx-auto">
-          <Reveal className="about-section" direction="fade-up">
-            <h2
+    <section className="relative py-20 px-6 bg-gradient-to-br from-purple-50 via-white to-blue-50 overflow-hidden">
+      {/* Decorative background orbs */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl animate-pulse" />
+
+      <div className="relative z-10 container mx-auto text-center">
+        {/* Title Section */}
+        <motion.h2
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent mb-4"
+        >
+          ✨ Timeless Quotes ✨
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="text-gray-600 text-lg max-w-2xl mx-auto mb-12"
+        >
+          Echoes of wisdom that inspire generations — discover the beauty of
+          thought and the power of words.
+        </motion.p>
+
+        {/* Quotes Grid */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {quotes.map((q, index) => (
+            <motion.div
+              key={index}
               data-aos="fade-up"
-              className="text-2xl font-bold text-purple-600 text-center mb-6 md:text-5xl"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="p-6 rounded-2xl bg-white/70 backdrop-blur-md shadow-lg border border-white/40 hover:shadow-2xl transition-all"
             >
-              QUOTES
-            </h2>
-          </Reveal>
-
-          <Reveal className="about-section" direction="fade-left">
-            <p
-              data-aos="fade-left"
-              className="text-lg text-gray-700 text-center mb-8 leading-relaxed mx-auto max-w-2xl"
-            >
-                Echoes of Wisdom: Timeless Words That Resonate Through History
-            </p>
-          </Reveal>
-
-            <Reveal className="about-section" direction="fade-left">
-              <h3 className="text-xl text-blue-500 font-semibold mb-2">- Mahatma Gandhi</h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-                "Be the change that you wish to see in the world."
+              <p className="text-gray-800 italic mb-4 text-lg leading-relaxed">
+                “{q.text}”
               </p>
-            </Reveal>
-
-            <Reveal className="about-section" direction="zoom-in" delay={400}>
-              <h3 className="text-xl text-blue-500 font-semibold mb-2">- Edmund Burke</h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-                "The only thing necessary for the triumph of evil is for good men to do nothing."
-              </p>
-            </Reveal>
-
-            <Reveal className="about-section" direction="fade-left">
-              <h3 className="text-xl font-semibold text-blue-500 mb-2">
-              - Martin Luther King Jr
+              <h3 className="text-blue-600 font-semibold text-right">
+                — {q.author}
               </h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-                "I have a dream..."
-              </p>
-            </Reveal>
-            <Reveal className="about-section" direction="fade-left">
-              <h3 className="text-xl text-blue-500 font-semibold mb-2">- William Shakespeare</h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-              "To be, or not to be, that is the question."               
-              </p>
-            </Reveal>
-
-            <Reveal className="about-section" direction="zoom-in" delay={400}>
-              <h3 className="text-xl text-blue-500 font-semibold mb-2">- Martin Luther King Jr</h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-              "In the end, we will remember not the words of our enemies, but the silence of our friends." 
-              </p>
-            </Reveal>
-
-            <Reveal className="about-section" direction="fade-left">
-              <h3 className="text-xl font-semibold text-blue-500 mb-2">
-              - Steve Jobs
-              </h3>
-              <p className="text-lg text-gray-700 leading-relaxed mx-auto max-w-2xl">
-              "The only way to do great work is to love what you do."              
-             </p>
-            </Reveal>
+            </motion.div>
+          ))}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 };
 
