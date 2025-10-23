@@ -9,6 +9,7 @@ const Navbar = () => {
   <li><NavLink to="/addbook">Add Book</NavLink></li>
   <li><NavLink to="/allbooks">All Books</NavLink></li>
   <li><NavLink to="/borrowedbooks">Borrowed Books</NavLink></li>
+  <li><NavLink to="/about">About</NavLink></li>
 </>
 
 const [theme, setTheme] = useState('light')
