@@ -1,30 +1,30 @@
 import Swal from "sweetalert2";
 
 const AddBook = () => {
+  const DEFAULT_PHOTO = "https://i.ibb.co.com/4g7NVnDW/ahad.jpg";
+
   const handleAddBook = (event) => {
     event.preventDefault();
     const form = event.target;
 
-    // Collect all fields
+    // Collect all fields, provide defaults if missing
     const newBook = {
-      name: form.book_name.value,
-      author: form.author_name.value,
-      category: form.category.value,
-      mood: form.mood.value || "",              // new field
-      readingTime: form.reading_time.value || "", // new field
-      rating: form.rating.value || 0,
-      photo: form.photo.value,
-      message: form.message.value,
-      likes: 0,                                 // default
-      createdAt: new Date().toISOString(),      // default
+      name: form.book_name.value || "Untitled Story",
+      author: form.author_name.value || "Anonymous",
+      category: form.category.value || "General",
+      mood: form.mood.value || "",
+      readingTime: form.reading_time.value || "",
+      rating: parseFloat(form.rating.value) || 0,
+      photo: form.photo.value || DEFAULT_PHOTO,  // fallback default photo
+      message: form.message.value || "No story content.",
+      likes: [],       // array of user IDs
+      comments: [],    // array of comment objects
+      createdAt: new Date().toISOString(),
     };
 
-    console.log(newBook);
-
-    // Send to server
     fetch("https://amar-golpo-server.vercel.app/books", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newBook),
     })
       .then((res) => res.json())
@@ -58,25 +58,13 @@ const AddBook = () => {
           {/* Name & Author */}
           <div className="md:flex gap-6">
             <div className="flex-1 relative">
-              <input
-                type="text"
-                name="book_name"
-                required
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder=" "
-              />
+              <input type="text" name="book_name" required className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Story Title
               </label>
             </div>
             <div className="flex-1 relative">
-              <input
-                type="text"
-                name="author_name"
-                required
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder=" "
-              />
+              <input type="text" name="author_name" required className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Your Name
               </label>
@@ -86,24 +74,13 @@ const AddBook = () => {
           {/* Category & Mood */}
           <div className="md:flex gap-6">
             <div className="flex-1 relative">
-              <input
-                type="text"
-                name="category"
-                required
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder=" "
-              />
+              <input type="text" name="category" required className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Category (Genre)
               </label>
             </div>
             <div className="flex-1 relative">
-              <input
-                type="text"
-                name="mood"
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder=" "
-              />
+              <input type="text" name="mood" className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Mood (Optional)
               </label>
@@ -113,26 +90,13 @@ const AddBook = () => {
           {/* Reading Time & Rating */}
           <div className="md:flex gap-6">
             <div className="flex-1 relative">
-              <input
-                type="text"
-                name="reading_time"
-                placeholder="e.g., 2 min read"
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
+              <input type="text" name="reading_time" className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Reading Time
               </label>
             </div>
             <div className="flex-1 relative">
-              <input
-                type="number"
-                name="rating"
-                min="0"
-                max="5"
-                step="0.1"
-                className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder=" "
-              />
+              <input type="number" name="rating" min="0" max="5" step="0.1" className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" " />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
                 Rating (Optional)
               </label>
@@ -144,33 +108,26 @@ const AddBook = () => {
             <input
               type="url"
               name="photo"
-              required
               className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder=" "
             />
             <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
-              Photo URL
+              Photo URL (Optional)
             </label>
+            <p className="mt-1 text-sm text-gray-500 italic">
+              No cover image? Don’t worry, our mischievous creator picked a default one for you! 😎
+            </p>
           </div>
 
           {/* Story */}
           <div className="relative">
-            <textarea
-              name="message"
-              rows="6"
-              required
-              className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder=" "
-            ></textarea>
+            <textarea name="message" rows="6" required className="peer w-full px-4 pt-6 pb-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder=" "></textarea>
             <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-purple-600">
               Your Story
             </label>
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white text-lg font-semibold rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300"
-          >
+          <button type="submit" className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white text-lg font-semibold rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
             Share Story
           </button>
         </form>

@@ -8,11 +8,11 @@ const BookCard = ({ book }) => {
     category,
     rating,
     photo,
-    message,       // story preview
-    mood,          // new field
-    readingTime,   // new field
-    likes,         // new field
-    createdAt,     // new field
+    message,
+    mood,
+    readingTime,
+    likes,
+    createdAt,
   } = book;
 
   // Preview text for long stories
@@ -31,17 +31,12 @@ const BookCard = ({ book }) => {
 
       {/* Story Info */}
       <div className="p-5 flex flex-col justify-between flex-1">
-        {/* Title and Author */}
         <div>
           <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">By {author}</p>
 
-          {/* Story preview */}
-          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-3">
-            {preview || "No story preview available."}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-3">{preview || "No story preview available."}</p>
 
-          {/* Tags */}
           <div className="flex flex-wrap gap-2 text-xs mb-3">
             <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-800">{category || "General"}</span>
             {mood && <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">{mood}</span>}
@@ -49,11 +44,9 @@ const BookCard = ({ book }) => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="mt-4 flex flex-col sm:flex-row sm:justify-between items-center gap-2">
-          {/* Likes and rating */}
           <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-            <span>❤️ {likes || 0}</span>
+            <span>❤️ {likes?.length || 0}</span>
             {rating && <span>⭐ {rating}</span>}
             <span className="ml-2 text-gray-400 text-xs">{createdAt ? new Date(createdAt).toLocaleDateString() : "Recently Added"}</span>
           </div>
