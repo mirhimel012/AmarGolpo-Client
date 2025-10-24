@@ -19,11 +19,16 @@ const router = createBrowserRouter([
     element: <Root></Root>,
     children: [
       {
-        path: "/",
-        element: <Home></Home>,
-      },
+  path: "/",
+  element: <Home />,
+  loader: async () => {
+    const res = await fetch("https://amar-golpo-server.vercel.app/books");
+    if (!res.ok) throw new Error("Failed to fetch books for Home");
+    return res.json(); // this will be available as useLoaderData() in Home
+  },
+},
       {
-        path: "/bookshelf",
+        path: "/storyverse",
         element: (
           <PrivateAllBooks>
             <AllBooks></AllBooks>

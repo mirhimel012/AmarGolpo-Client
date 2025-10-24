@@ -10,10 +10,10 @@ const Navbar = () => {
         <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/">Home</NavLink>
       </li>
       <li>
-        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/bookshelf">BookShelf</NavLink>
+        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/storyverse">StoryVerse</NavLink>
       </li>
       <li>
-        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/shareStory">Share Story</NavLink>
+        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/shareStory">ShareStory</NavLink>
       </li>
       {/* <li>
         <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/myList">My List</NavLink>

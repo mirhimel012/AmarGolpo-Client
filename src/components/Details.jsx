@@ -96,9 +96,27 @@ const Details = () => {
           </div>
 
           {/* Story Content */}
-          <div className="overflow-y-auto p-6 rounded-2xl shadow-inner bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 prose prose-lg dark:prose-invert leading-relaxed max-h-[500px]">
-            <p>{message || "No story content available."}</p>
+          <div className="relative overflow-y-auto p-8 rounded-3xl shadow-xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 max-h-[500px] prose prose-lg dark:prose-invert leading-relaxed tracking-wide border border-gray-200 dark:border-gray-700">
+            {/* Decorative top-left & bottom-right glow */}
+            <div className="absolute top-4 left-4 w-16 h-16 bg-purple-200/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div className="absolute bottom-4 right-4 w-20 h-20 bg-blue-200/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            {/* Scrollable Story Content */}
+            <div className="relative z-10 space-y-6">
+              {message ? (
+                message.split("\n").map((line, idx) => (
+                  <p key={idx} className="text-base md:text-lg">
+                    {line}
+                  </p>
+                ))
+              ) : (
+                <p className="italic text-gray-400 dark:text-gray-500">
+                  No story content available.
+                </p>
+              )}
+            </div>
           </div>
+
         </div>
 
         {/* Right side: Likes and Comments */}
