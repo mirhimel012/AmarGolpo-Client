@@ -14,54 +14,67 @@ import PrivateMyList from "../pages/PrivateMyList";
 import MyList from "../pages/MyList";
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Root></Root>,
-        children:[
-            {
-                path: '/',
-                element: <Home></Home>,
-            },
-            {
-                path: '/bookshelf',
-                element: <PrivateAllBooks><AllBooks></AllBooks></PrivateAllBooks>,
-                loader: () => fetch('https://amar-golpo-server.vercel.app/books')
-            },
-            {
-                path: '/shareStory',
-                element: <PrivateAddBook><AddBook></AddBook></PrivateAddBook>,  
-            },
-            {
-                path: '/mylist',
-                element: <PrivateMyList><MyList></MyList></PrivateMyList>,
-            },
-            {
-                path: '/about',
-                element: <About></About>,
-            },
-            {
-                path: '/contact',
-                element: <Contact></Contact>,
-            },
-            {
-                path: '/login',
-                element: <Login></Login>,
-            },
-            {
-                path: '/register',
-                element: <Register></Register>,
-            },
-            {
-  path: '/details/:id',
-  element: <Details />,
-  loader: async ({ params }) => {
-    const res = await fetch(`https://amar-golpo-server.vercel.app/books/${params.id}`);
-    if (!res.ok) throw new Error("Failed to fetch book details");
-    return res.json();
-  }
-}
-
-        ]
-    }
+  {
+    path: "/",
+    element: <Root></Root>,
+    children: [
+      {
+        path: "/",
+        element: <Home></Home>,
+      },
+      {
+        path: "/bookshelf",
+        element: (
+          <PrivateAllBooks>
+            <AllBooks></AllBooks>
+          </PrivateAllBooks>
+        ),
+        loader: () => fetch("https://amar-golpo-server.vercel.app/books"),
+      },
+      {
+        path: "/shareStory",
+        element: (
+          <PrivateAddBook>
+            <AddBook></AddBook>
+          </PrivateAddBook>
+        ),
+      },
+      {
+        path: "/mylist",
+        element: (
+          <PrivateMyList>
+            <MyList></MyList>
+          </PrivateMyList>
+        ),
+      },
+      {
+        path: "/about",
+        element: <About></About>,
+      },
+      {
+        path: "/contact",
+        element: <Contact></Contact>,
+      },
+      {
+        path: "/login",
+        element: <Login></Login>,
+      },
+      {
+        path: "/register",
+        element: <Register></Register>,
+      },
+      {
+        path: "/details/:id",
+        element: <Details />,
+        loader: async ({ params }) => {
+          const res = await fetch(
+            `https://amar-golpo-server.vercel.app/books/${params.id}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch book details");
+          return res.json();
+        },
+      },
+    ],
+  },
 ]);
 export default router;
