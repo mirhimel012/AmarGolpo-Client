@@ -13,22 +13,35 @@ const Details = () => {
     name,
     author,
     category,
-    rating,
+    rating: initialRating,
     photo,
     message,
     mood,
     readingTime,
     likes: initialLikes,
     comments: initialComments,
+    ratings: initialRatings,
     createdAt,
   } = book;
 
   const [likes, setLikes] = useState(Array.isArray(initialLikes) ? initialLikes : []);
   const [comments, setComments] = useState(Array.isArray(initialComments) ? initialComments : []);
   const [commentText, setCommentText] = useState("");
+  const [ratings, setRatings] = useState(Array.isArray(initialRatings) ? initialRatings : []);
+  const [userRating, setUserRating] = useState(() => {
+    if (!user) return 0;
+    const found = ratings.find((r) => r.userId === user.uid);
+    return found ? found.rating : 0;
+  });
+  const [avgRating, setAvgRating] = useState(
+    ratings.length
+      ? (ratings.reduce((a, b) => a + (b.rating || b), 0) / ratings.length).toFixed(1)
+      : initialRating || 0
+  );
 
   const userLiked = user ? likes.includes(user.uid) : false;
 
+  // ❤️ Like
   const handleLike = async () => {
     if (!user) return alert("Please login to like this story!");
     if (userLiked) return;
@@ -43,6 +56,7 @@ const Details = () => {
     });
   };
 
+  // 💬 Comment
   const handleComment = async () => {
     if (!user) return alert("Please login to comment!");
     if (!commentText.trim()) return;
@@ -65,21 +79,46 @@ const Details = () => {
     });
   };
 
+  // ⭐ Rating System (Dynamic)
+  const handleRating = async (ratingValue) => {
+    if (!user) return alert("Please login to rate this story!");
+
+    const res = await fetch(`https://amar-golpo-server.vercel.app/books/${_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ratingUpdate: { userId: user.uid, rating: ratingValue },
+      }),
+    });
+
+    const data = await res.json();
+    if (data?.avgRating) {
+      setAvgRating(data.avgRating.toFixed(1));
+    }
+
+    // Update UI instantly
+    const updatedRatings = [...ratings];
+    const existingIndex = updatedRatings.findIndex((r) => r.userId === user.uid);
+    if (existingIndex >= 0) updatedRatings[existingIndex].rating = ratingValue;
+    else updatedRatings.push({ userId: user.uid, rating: ratingValue });
+
+    setRatings(updatedRatings);
+    setUserRating(ratingValue);
+  };
+
   return (
     <div className="container mx-auto py-12 px-4">
-      {/* Top Cover Image */}
+      {/* Top Image */}
       <div className="flex justify-center mb-10">
-  <img
-    src={photo || DEFAULT_PHOTO}
-    alt={name}
-    className="rounded-3xl shadow-2xl max-h-[500px] w-full max-w-5xl object-cover hover:scale-105 transition-transform duration-500"
-  />
-</div>
+        <img
+          src={photo || DEFAULT_PHOTO}
+          alt={name}
+          className="rounded-3xl shadow-2xl max-h-[500px] w-full max-w-5xl object-cover hover:scale-105 transition-transform duration-500"
+        />
+      </div>
 
-
-      {/* Bottom Section: two sides */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Left side: Book reading / info */}
+        {/* LEFT: Story */}
         <div className="md:w-2/3 flex flex-col space-y-6">
           <h1 className="text-4xl font-extrabold text-purple-700">{name}</h1>
           <p className="text-lg font-semibold">By: {author}</p>
@@ -89,19 +128,42 @@ const Details = () => {
 
           {/* Tags */}
           <div className="flex flex-wrap gap-3 mb-4">
-            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Category: {category || "General"}</span>
-            {mood && <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Mood: {mood}</span>}
-            {readingTime && <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Reading: {readingTime}</span>}
-            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Rating: {rating || 0}</span>
+            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+              Category: {category || "General"}
+            </span>
+            {mood && (
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                Mood: {mood}
+              </span>
+            )}
+            {readingTime && (
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                Reading: {readingTime}
+              </span>
+            )}
+            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+              Rating: {avgRating}/5
+            </span>
+          </div>
+
+          {/* ⭐ Rating */}
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-700">Your Rating:</span>
+            {[1, 2, 3, 4, 5].map((num) => (
+              <button
+                key={num}
+                onClick={() => handleRating(num)}
+                className={`text-2xl transition ${
+                  num <= userRating ? "text-yellow-400" : "text-gray-400 hover:text-yellow-300"
+                }`}
+              >
+                ★
+              </button>
+            ))}
           </div>
 
           {/* Story Content */}
           <div className="relative overflow-y-auto p-8 rounded-3xl shadow-xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 max-h-[500px] prose prose-lg dark:prose-invert leading-relaxed tracking-wide border border-gray-200 dark:border-gray-700">
-            {/* Decorative top-left & bottom-right glow */}
-            <div className="absolute top-4 left-4 w-16 h-16 bg-purple-200/20 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="absolute bottom-4 right-4 w-20 h-20 bg-blue-200/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            {/* Scrollable Story Content */}
             <div className="relative z-10 space-y-6">
               {message ? (
                 message.split("\n").map((line, idx) => (
@@ -110,16 +172,13 @@ const Details = () => {
                   </p>
                 ))
               ) : (
-                <p className="italic text-gray-400 dark:text-gray-500">
-                  No story content available.
-                </p>
+                <p className="italic text-gray-400 dark:text-gray-500">No story content available.</p>
               )}
             </div>
           </div>
-
         </div>
 
-        {/* Right side: Likes and Comments */}
+        {/* RIGHT: Likes & Comments */}
         <div className="md:w-1/3 flex flex-col space-y-6">
           {/* Like & Share */}
           <div className="flex flex-col gap-4">
@@ -143,11 +202,11 @@ const Details = () => {
 
           {/* Comments */}
           <div className="flex flex-col gap-3">
-            <h2 className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-6 py-3 rounded-full text-2xl font-semibold shadow-lg text-center transition-transform hover:scale-105">
+            <h2 className="bg-gradient-to-r from-blue-400 to-blue-600 text-white px-6 py-3 rounded-full text-2xl font-semibold shadow-lg text-center">
               Comments
             </h2>
 
-            <div className="space-y-3 max-h-72 overflow-y-auto">
+            <div className="space-y-3 max-h-[1000px] overflow-y-auto">
               {comments.length ? (
                 comments.map((c, idx) => (
                   <div
@@ -156,7 +215,9 @@ const Details = () => {
                   >
                     <p className="font-semibold text-gray-900 dark:text-gray-100">{c.name}</p>
                     <p className="text-gray-800 dark:text-gray-200 mt-1">{c.text}</p>
-                    <span className="text-xs text-gray-500 mt-1 block">{new Date(c.createdAt).toLocaleString()}</span>
+                    <span className="text-xs text-gray-500 mt-1 block">
+                      {new Date(c.createdAt).toLocaleString()}
+                    </span>
                   </div>
                 ))
               ) : (
@@ -171,7 +232,7 @@ const Details = () => {
                   placeholder="Write a comment..."
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  className="flex-1 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 dark:placeholder-gray-300"
+                  className="flex-1 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <button
                   onClick={handleComment}
