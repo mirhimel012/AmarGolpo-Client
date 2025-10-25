@@ -39,6 +39,9 @@ const Details = () => {
       : initialRating || 0
   );
 
+  const [fontSize, setFontSize] = useState("text-base");
+  const [bgTheme, setBgTheme] = useState("bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100");
+
   const userLiked = user ? likes.includes(user.uid) : false;
 
   // ❤️ Like
@@ -162,20 +165,100 @@ const Details = () => {
             ))}
           </div>
 
-          {/* Story Content */}
-          <div className="relative overflow-y-auto p-8 rounded-3xl shadow-xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 max-h-[500px] prose prose-lg dark:prose-invert leading-relaxed tracking-wide border border-gray-200 dark:border-gray-700">
-            <div className="relative z-10 space-y-6">
+          {/* Story Content with Reader Options */}
+          <div className="flex flex-col space-y-4">
+            {/* Reader Options Toolbar */}
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-gray-700 dark:text-gray-800 font-bold">Font:</span>
+                <button
+                  onClick={() => setFontSize("text-sm")}
+                  className={`px-3 py-1 rounded border transition ${
+                    fontSize === "text-sm"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Small
+                </button>
+                <button
+                  onClick={() => setFontSize("text-base")}
+                  className={`px-3 py-1 rounded border transition ${
+                    fontSize === "text-base"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-400 dark:bg-gray-600 text-gray-900 dark:text-gray-100 border-gray-500 dark:border-gray-500 hover:bg-gray-500 dark:hover:bg-gray-500"
+                  }`}
+                >
+                  Medium
+                </button>
+                <button
+                  onClick={() => setFontSize("text-lg")}
+                  className={`px-3 py-1 rounded border transition ${
+                    fontSize === "text-lg"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Large
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-gray-700 dark:text-gray-800 font-bold">Theme:</span>
+                <button
+                  onClick={() =>
+                    setBgTheme("bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100")
+                  }
+                  className={`px-3 py-1 rounded border transition ${
+                    bgTheme === "bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Light/Dark
+                </button>
+                <button
+                onClick={() =>
+                  setBgTheme(
+                    "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
+                  )
+                }
+                className={`px-3 py-1 rounded border transition ${
+                  bgTheme === "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
+                    ? "bg-purple-500 text-white border-purple-600"
+                    : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                }`}
+              >
+                Calm Blue
+              </button>
+              <button
+                onClick={() =>
+                  setBgTheme("bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300")
+                }
+                className={`px-3 py-1 rounded border transition ${
+                  bgTheme === "bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300"
+                    ? "bg-purple-500 text-white border-purple-600"
+                    : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                }`}
+              >
+                Soft Night
+              </button>
+
+              </div>
+            </div>
+
+            {/* Story Content */}
+            <div
+              className={`relative overflow-y-auto p-8 rounded-3xl shadow-xl prose dark:prose-invert ${fontSize} leading-relaxed tracking-wide ${bgTheme} max-h-[500px] border border-gray-200 dark:border-gray-700`}
+            >
               {message ? (
-                message.split("\n").map((line, idx) => (
-                  <p key={idx} className="text-base md:text-lg">
-                    {line}
-                  </p>
-                ))
+                message.split("\n").map((line, idx) => <p key={idx}>{line}</p>)
               ) : (
                 <p className="italic text-gray-400 dark:text-gray-500">No story content available.</p>
               )}
             </div>
           </div>
+
         </div>
 
         {/* RIGHT: Likes & Comments */}
@@ -206,7 +289,7 @@ const Details = () => {
               Comments
             </h2>
 
-            <div className="space-y-3 max-h-[1000px] overflow-y-auto">
+            <div className="space-y-3 max-h-[500px] overflow-y-auto p-2">
               {comments.length ? (
                 comments.map((c, idx) => (
                   <div

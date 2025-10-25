@@ -6,7 +6,7 @@ const BookCard = ({ book }) => {
     name,
     author,
     category,
-    ratings, // ⬅️ now expect an array of ratings from all users
+    ratings, // array of objects: [{ userId, rating }]
     photo,
     message,
     mood,
@@ -15,13 +15,13 @@ const BookCard = ({ book }) => {
     createdAt,
   } = book;
 
-  // 🧮 Calculate the average rating dynamically
+  // 🧮 Calculate the average rating dynamically (fixed property)
   const averageRating =
     ratings && ratings.length > 0
-      ? (ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(1)
+      ? (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(1)
       : "N/A";
 
-  // ✂️ Preview for story
+  // ✂️ Preview text
   const preview =
     message?.length > 180 ? message.slice(0, 180) + "..." : message;
 
@@ -47,10 +47,18 @@ const BookCard = ({ book }) => {
           </p>
 
           <div className="flex flex-wrap gap-2 text-xs mb-3">
-            <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-800">{category || "General"}</span>
-            {mood && <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">{mood}</span>}
+            <span className="px-3 py-1 rounded-full bg-pink-100 text-pink-800">
+              {category || "General"}
+            </span>
+            {mood && (
+              <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">
+                {mood}
+              </span>
+            )}
             {readingTime && (
-              <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">{readingTime}</span>
+              <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                {readingTime}
+              </span>
             )}
           </div>
         </div>
@@ -61,11 +69,13 @@ const BookCard = ({ book }) => {
             <span>❤️ {likes?.length || 0}</span>
             <span>⭐ {averageRating}</span>
             <span className="ml-2 text-gray-400 text-xs">
-              {createdAt ? new Date(createdAt).toLocaleDateString() : "Recently Added"}
+              {createdAt
+                ? new Date(createdAt).toLocaleDateString()
+                : "Recently Added"}
             </span>
           </div>
 
-          {/* Read Story button */}
+          {/* Read Story Button */}
           <Link
             to={`/details/${_id}`}
             className="bg-gradient-to-r from-pink-500 to-red-400 hover:from-red-500 hover:to-pink-500 text-white font-semibold px-4 py-2 rounded-lg transition duration-300"
