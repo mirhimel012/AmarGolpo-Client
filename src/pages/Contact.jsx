@@ -56,7 +56,7 @@ const Contact = () => {
           {[
             { icon: MdEmail, title: "Email", text: "mirhimel012@gmail.com", color: "text-purple-600" },
             { icon: FaWhatsapp, title: "WhatsApp", text: "+8801764630254", color: "text-green-500" },
-            { icon: FaFacebookMessenger, title: "Messenger", text: "m.me/touravels", color: "text-blue-600" },
+            { icon: FaFacebookMessenger, title: "Messenger", text: "m.me/amargolpo", color: "text-blue-600" },
             { icon: GrLocation, title: "Office", text: "İstanbul, Türkiye", color: "text-purple-600" },
           ].map((item, idx) => {
             const Icon = item.icon;
