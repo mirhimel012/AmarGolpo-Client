@@ -1,6 +1,7 @@
 import { useLoaderData } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AuthContext } from "../FirebaseProvider/FirebaseProvider";
+import axios from "axios";
 
 const Details = () => {
   const book = useLoaderData();
@@ -41,6 +42,9 @@ const Details = () => {
 
   const [fontSize, setFontSize] = useState("text-base");
   const [bgTheme, setBgTheme] = useState("bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100");
+
+  const [analysisResult, setAnalysisResult] = useState("");
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
   const userLiked = user ? likes.includes(user.uid) : false;
 
@@ -107,6 +111,24 @@ const Details = () => {
 
     setRatings(updatedRatings);
     setUserRating(ratingValue);
+  };
+
+  // 🧠 Analyze Story
+  const handleAnalyzeStory = async () => {
+    if (!message || !message.trim()) return alert("No story content to analyze!");
+
+    setLoadingAnalysis(true);
+    try {
+      const response = await axios.post("http://localhost:5000/analyze-text", {
+        text: message,
+      });
+      setAnalysisResult(response.data.analysis || "No analysis result.");
+    } catch (error) {
+      console.error(error);
+      setAnalysisResult("Error analyzing the story.");
+    } finally {
+      setLoadingAnalysis(false);
+    }
   };
 
   return (
@@ -218,32 +240,31 @@ const Details = () => {
                   Light/Dark
                 </button>
                 <button
-                onClick={() =>
-                  setBgTheme(
-                    "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
-                  )
-                }
-                className={`px-3 py-1 rounded border transition ${
-                  bgTheme === "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
-                    ? "bg-purple-500 text-white border-purple-600"
-                    : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
-                }`}
-              >
-                Calm Blue
-              </button>
-              <button
-                onClick={() =>
-                  setBgTheme("bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300")
-                }
-                className={`px-3 py-1 rounded border transition ${
-                  bgTheme === "bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300"
-                    ? "bg-purple-500 text-white border-purple-600"
-                    : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
-                }`}
-              >
-                Soft Night
-              </button>
-
+                  onClick={() =>
+                    setBgTheme(
+                      "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
+                    )
+                  }
+                  className={`px-3 py-1 rounded border transition ${
+                    bgTheme === "bg-[#e3f2fd] dark:bg-[#1e293b] text-[#1e293b] dark:text-[#e0f2fe]"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Calm Blue
+                </button>
+                <button
+                  onClick={() =>
+                    setBgTheme("bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300")
+                  }
+                  className={`px-3 py-1 rounded border transition ${
+                    bgTheme === "bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300"
+                      ? "bg-purple-500 text-white border-purple-600"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 hover:bg-gray-400 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Soft Night
+                </button>
               </div>
             </div>
 
@@ -257,8 +278,23 @@ const Details = () => {
                 <p className="italic text-gray-400 dark:text-gray-500">No story content available.</p>
               )}
             </div>
-          </div>
 
+            {/* Analyze Story Section */}
+            <div>
+              <button
+                onClick={handleAnalyzeStory}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-2xl shadow-md transition-transform hover:scale-105 font-semibold mt-4"
+              >
+                {loadingAnalysis ? "Analyzing..." : "Analyze Story"}
+              </button>
+
+              {analysisResult && (
+                <div className="mt-4 p-4 text-white bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-300 dark:border-gray-700">
+                  <pre className="whitespace-pre-wrap">{analysisResult}</pre>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* RIGHT: Likes & Comments */}
