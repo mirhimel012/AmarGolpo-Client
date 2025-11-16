@@ -1,118 +1,165 @@
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 
 const Login = () => {
-  const {signInUser} = useAuth();
-    const [showPassword, setShowPassword] = useState(false);
+  const { signInUser, googleLogin, setUser } = useAuth(); // Make sure setUser exists in your context
+  const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState({ type: "", message: "" });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
+  // Email/password login
   const onSubmit = (data) => {
-    const{email, password} = data;
+    const { email, password } = data;
+    setToast({ type: "", message: "" });
+
     signInUser(email, password)
       .then(result => {
-        console.log(result.user);// issue
-        // const from = '/';
+        if (result.user) {
+          // Update user context immediately
+          if (setUser) {
+            setUser({
+              email: result.user.email,
+              displayName: result.user.displayName,
+              photoURL: result.user.photoURL,
+            });
+          }
+          setToast({ type: "success", message: "Login successful!" });
+          setTimeout(() => {
+            setToast({ type: "", message: "" });
+            navigate(from);
+          }, 1200);
+        }
       })
-      .catch(error =>{
-        console.log(error)
-      })
+      .catch(error => {
+        console.error(error);
+        setToast({ type: "error", message: "Login failed. Check email/password." });
+      });
   };
 
-  // Social Login Auth Receive
-  const {googleLogin} = useAuth();
+  // Social login (Google)
+  const handleSocialLogin = (socialProvider) => {
+    setToast({ type: "", message: "" });
+    socialProvider()
+      .then(result => {
+        if (result.user) {
+          if (setUser) {
+            setUser({
+              email: result.user.email,
+              displayName: result.user.displayName,
+              photoURL: result.user.photoURL,
+            });
+          }
+          navigate(from);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        setToast({ type: "error", message: "Social login failed. Try again." });
+      });
+  };
 
-  // navigation system
-  const navigate = useNavigate()
-  const location = useLocation()
-  const from = location ?.state || '/'
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-100 via-white to-green-100 p-5">
+      <div className="flex w-full max-w-4xl overflow-hidden bg-white rounded-xl shadow-xl relative">
+        
+        {/* Form Section */}
+        <div className="w-full lg:w-1/2 p-8 md:p-12 relative">
+          <div className="flex justify-center mb-6">
+            <img className="w-14" src="https://i.ibb.co/4dDWk3Q/books.png" alt="Logo" />
+          </div>
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">Welcome Back!</h2>
+          <p className="text-center text-gray-500 mb-6">Sign in to continue to your account</p>
 
-  const handleSocialLogin = socialProvider => {
-    socialProvider().then(result => {
-      if(result.user){
-        navigate(from);
-      }
-    })
-  }
-    return (
-        <div className="m-10">
-            <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-4xl">
-    
-    <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
-        <div className="flex justify-center mx-auto">
-            <img className="w-10 md:w-14" src="https://i.ibb.co/4dDWk3Q/books.png" alt=""/>
-        </div>
+          {/* Google Login */}
+          <button 
+            onClick={() => handleSocialLogin(googleLogin)} 
+            className="flex items-center justify-center w-full border border-gray-300 rounded-lg py-2 mb-6 text-gray-700 hover:bg-gray-100 transition"
+          >
+            <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-6 h-6 mr-3"/>
+            <span className="font-semibold">Sign in with Google</span>
+          </button>
 
-        <p className="mt-3 text-xl text-center text-gray-600 dark:text-gray-200">
-            Welcome back!
-        </p>
+          <div className="flex items-center justify-between mb-6">
+            <span className="border-b w-1/4 border-gray-300"></span>
+            <span className="text-gray-400 uppercase text-sm">or login with email</span>
+            <span className="border-b w-1/4 border-gray-300"></span>
+          </div>
 
-        <button onClick={()=>handleSocialLogin(googleLogin)} className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <div className="px-4 py-2">
-                <svg className="w-6 h-6" viewBox="0 0 40 40">
-                    <path d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z" fill="#FFC107" />
-                    <path d="M5.25497 12.2425L10.7308 16.2583C12.2125 12.59 15.8008 9.99999 20 9.99999C22.5491 9.99999 24.8683 10.9617 26.6341 12.5325L31.3483 7.81833C28.3716 5.04416 24.39 3.33333 20 3.33333C13.5983 3.33333 8.04663 6.94749 5.25497 12.2425Z" fill="#FF3D00" />
-                    <path d="M20 36.6667C24.305 36.6667 28.2167 35.0192 31.1742 32.34L26.0159 27.975C24.3425 29.2425 22.2625 30 20 30C15.665 30 11.9842 27.2359 10.5975 23.3784L5.16254 27.5659C7.92087 32.9634 13.5225 36.6667 20 36.6667Z" fill="#4CAF50" />
-                    <path d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.7592 25.1975 27.56 26.805 26.0133 27.9758C26.0142 27.975 26.015 27.975 26.0158 27.9742L31.1742 32.3392C30.8092 32.6708 36.6667 28.3333 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z" fill="#1976D2" />
-                </svg>
+          {/* Login Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-1">Email</label>
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none" 
+                {...register("email", { required: true })} 
+              />
+              {errors.email && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
 
-            <span className="w-5/6 px-4 py-3 font-bold text-center">Sign in with Google</span>
-        </button>
+            <div className="relative">
+              <label className="block text-gray-700 mb-1">Password</label>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Enter your password" 
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none" 
+                {...register("password", { required: true })} 
+              />
+              <span 
+                className="absolute top-9 right-3 cursor-pointer text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+              {errors.password && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+              <Link to="#" className="text-sm text-cyan-500 hover:underline float-right mt-1">Forgot password?</Link>
+            </div>
 
-        <div className="flex items-center justify-between mt-4">
-            <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
+            <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 rounded-lg transition">Login</button>
+          </form>
 
-            <a href="#" className="text-xs text-center text-gray-500 uppercase dark:text-gray-400 hover:underline">or login
-                with email</a>
+          <p className="mt-6 text-center text-gray-500">
+            New here? <Link to="/register" className="text-cyan-500 font-semibold hover:underline">Register</Link>
+          </p>
 
-            <span className="w-1/5 border-b dark:border-gray-400 lg:w-1/4"></span>
+          {/* Toast Message */}
+          {toast.message && (
+            <div
+              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-3xl text-white p-3 px-6 font-semibold animate-fadeIn ${
+                toast.type === "error" ? "bg-red-500" : "bg-green-500"
+              }`}
+            >
+              {toast.message}
+            </div>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="card-body">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <input name="email" type="email" placeholder="email" className="input input-bordered" {...register("email", { required: true })} />
-          {errors.email && <span className="text-red-500">This field is required</span>}
+        {/* Image Section */}
+        <div className="hidden lg:block lg:w-1/2">
+          <img src="https://i.ibb.co/DWDY1v8/reading-8575569-1280.jpg" alt="Login Visual" className="h-full w-full object-cover"/>
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Password</span>
-          </label>
-          <input name="password" type={showPassword ? "text" : "password"} placeholder="password" className="input input-bordered" {...register("password", { required: true })} />
-          <span className="absolute mt-14 ml-48 lg:ml-72" onClick={()=> setShowPassword(!showPassword)}>
-	            {
-	              showPassword ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>
-	            }
-            </span>
-          {errors.password && <span className="text-red-500">This field is required</span>}
-          <label className="label">
-            <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-          </label>
-        </div>
-        <div className="form-control mt-6">
-          <button className="btn btn-primary">Login</button>
-        </div>
-        <div className="text-center text-xl mt-2">      
-	       <p>New Here? Please <Link className="text-lime-600 font-bold" to="/register">Register</Link></p>
-        </div>
-      </form>
+      </div>
+
+      {/* Fade-in Animation */}
+      <style>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.7s ease forwards;
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
-    
-    <div className="hidden bg-cover lg:block lg:w-1/2"><img className="h-full" src="https://i.ibb.co/DWDY1v8/reading-8575569-1280.jpg" alt="" />
-    </div>
-</div>
-        </div>
-    );
+  );
 };
 
 export default Login;
