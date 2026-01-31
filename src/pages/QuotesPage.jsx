@@ -1,7 +1,8 @@
 // src/pages/QuotesPage.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { AuthContext } from "../FirebaseProvider/FirebaseProvider";
 
 const categories = [
   "Motivational",
@@ -11,35 +12,33 @@ const categories = [
   "Philosophy",
 ];
 
-const API_BASE = "https://amargolpo.vercel.app";
+const API_BASE = "https://amar-golpo-server.vercel.app";
 
-const QuotesPage = ({ userId }) => {
-  const [quotes, setQuotes] = useState([]); // MUST be array
+const QuotesPage = () => {
+  const { user } = useContext(AuthContext);
+  const [quotes, setQuotes] = useState([]);
   const [newQuote, setNewQuote] = useState("");
   const [newCategory, setNewCategory] = useState(categories[0]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(false);
-  const author = userId || "Anonymous";
 
-  // 🔹 Normalize any backend response into an array
-  const normalizeQuotes = (data) => {
-    if (Array.isArray(data)) return data;
-    return [];
-  };
+  const [expandedQuoteIds, setExpandedQuoteIds] = useState([]); // Track expanded quotes
 
-  // 🔹 Fetch quotes
+  // Normalize backend response
+  const normalizeQuotes = (data) => (Array.isArray(data) ? data : []);
+
+  // Fetch quotes
   const fetchQuotes = async (category = "") => {
     try {
       setLoading(true);
       const url = category
         ? `${API_BASE}/quotes?category=${category}`
         : `${API_BASE}/quotes`;
-
       const res = await axios.get(url);
       setQuotes(normalizeQuotes(res.data));
     } catch (err) {
       console.error("❌ Fetch quotes failed:", err);
-      setQuotes([]); // NEVER allow non-array
+      setQuotes([]);
     } finally {
       setLoading(false);
     }
@@ -49,34 +48,38 @@ const QuotesPage = ({ userId }) => {
     fetchQuotes();
   }, []);
 
-  // 🔹 Post quote
+  // Post quote
   const handlePostQuote = async (e) => {
     e.preventDefault();
     if (!newQuote.trim()) return;
 
+    if (!user) return alert("Please login to post a quote!");
+    if (newQuote.length > 500) return alert("Quote too long! Max 500 characters.");
+
     try {
       const res = await axios.post(`${API_BASE}/quotes`, {
         text: newQuote.trim(),
-        author,
+        author: user.displayName || "Anonymous",
         category: newCategory,
       });
 
       if (res.data?.insertedId) {
         setNewQuote("");
         setNewCategory(categories[0]);
-        fetchQuotes(selectedCategory); // reload safely
+        fetchQuotes(selectedCategory);
       }
     } catch (err) {
       console.error("❌ Post quote failed:", err);
     }
   };
 
-  // 🔹 Like / Unlike
+  // Like / Unlike
   const handleLike = async (quoteId) => {
+    if (!user) return alert("Please login to like quotes!");
     try {
       const res = await axios.put(
         `${API_BASE}/quotes/${quoteId}/like`,
-        { userId: author }
+        { userId: user.uid }
       );
 
       if (typeof res.data?.likesCount === "number") {
@@ -85,7 +88,7 @@ const QuotesPage = ({ userId }) => {
             q._id === quoteId
               ? {
                   ...q,
-                  likes: Array(res.data.likesCount).fill(author),
+                  likes: Array(res.data.likesCount).fill(user.displayName || "Anonymous"),
                 }
               : q
           )
@@ -96,11 +99,20 @@ const QuotesPage = ({ userId }) => {
     }
   };
 
-  // 🔹 Category filter
+  // Category filter
   const handleCategoryFilter = (e) => {
     const cat = e.target.value;
     setSelectedCategory(cat);
     fetchQuotes(cat);
+  };
+
+  // Toggle quote expansion
+  const toggleExpand = (quoteId) => {
+    setExpandedQuoteIds((prev) =>
+      prev.includes(quoteId)
+        ? prev.filter((id) => id !== quoteId)
+        : [...prev, quoteId]
+    );
   };
 
   return (
@@ -115,10 +127,11 @@ const QuotesPage = ({ userId }) => {
           <textarea
             value={newQuote}
             onChange={(e) => setNewQuote(e.target.value)}
-            placeholder="Write your quote..."
+            placeholder="Write your quote... (max 500 chars)"
             className="w-full p-4 rounded-lg border focus:ring-2 focus:ring-purple-500"
             required
           />
+          <p className="text-sm text-gray-500">{newQuote.length}/500</p>
 
           <select
             value={newCategory}
@@ -157,30 +170,58 @@ const QuotesPage = ({ userId }) => {
         <p className="text-center text-gray-500">No quotes found.</p>
       ) : (
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {quotes.map((quote) => (
-            <motion.div
-              key={quote._id}
-              whileHover={{ scale: 1.03 }}
-              className="p-6 rounded-2xl bg-white shadow-lg flex flex-col justify-between"
-            >
-              <div>
-                <p className="italic text-lg mb-4">“{quote.text}”</p>
-                <p className="text-right text-blue-600 font-semibold">
-                  — {quote.author}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Category: {quote.category}
-                </p>
-              </div>
-
-              <button
-                onClick={() => handleLike(quote._id)}
-                className="mt-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          {quotes.map((quote) => {
+            const isExpanded = expandedQuoteIds.includes(quote._id);
+            return (
+              <motion.div
+                key={quote._id}
+                whileHover={{ scale: 1.03 }}
+                className="p-6 rounded-2xl bg-white shadow-lg flex flex-col justify-between"
               >
-                ❤️ {Array.isArray(quote.likes) ? quote.likes.length : 0} Like
-              </button>
-            </motion.div>
-          ))}
+                <div>
+                  <p
+                    className={`italic text-lg mb-4 ${
+                      !isExpanded ? "line-clamp-3 overflow-hidden" : ""
+                    }`}
+                  >
+                    “{quote.text}”
+                  </p>
+
+                  {!isExpanded && quote.text.length > 150 && (
+                    <button
+                      onClick={() => toggleExpand(quote._id)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Read more
+                    </button>
+                  )}
+
+                  {isExpanded && (
+                    <button
+                      onClick={() => toggleExpand(quote._id)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Show less
+                    </button>
+                  )}
+
+                  <p className="text-right text-blue-600 font-semibold mt-2">
+                    — {quote.author}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Category: {quote.category}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleLike(quote._id)}
+                  className="mt-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                >
+                  ❤️ {Array.isArray(quote.likes) ? quote.likes.length : 0} Like
+                </button>
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>
