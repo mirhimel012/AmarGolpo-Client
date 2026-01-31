@@ -21,11 +21,36 @@ const QuotesPage = () => {
   const [newCategory, setNewCategory] = useState(categories[0]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const [expandedQuoteIds, setExpandedQuoteIds] = useState([]); // Track expanded quotes
+  const [expandedQuoteIds, setExpandedQuoteIds] = useState([]);
+  const [sortOption, setSortOption] = useState("mostLiked"); // default sort
 
   // Normalize backend response
   const normalizeQuotes = (data) => (Array.isArray(data) ? data : []);
+
+  // Sorting function
+  const sortQuotes = (quotesArray) => {
+    const now = new Date();
+    switch (sortOption) {
+      case "mostLiked":
+        return [...quotesArray].sort(
+          (a, b) => (b.likes?.length || 0) - (a.likes?.length || 0)
+        );
+      case "newest":
+        return [...quotesArray].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+      case "trending":
+        return [...quotesArray].sort((a, b) => {
+          const daysA = Math.max((now - new Date(a.createdAt)) / (1000 * 60 * 60 * 24), 1);
+          const daysB = Math.max((now - new Date(b.createdAt)) / (1000 * 60 * 60 * 24), 1);
+          const likesPerDayA = (a.likes?.length || 0) / daysA;
+          const likesPerDayB = (b.likes?.length || 0) / daysB;
+          return likesPerDayB - likesPerDayA;
+        });
+      default:
+        return quotesArray;
+    }
+  };
 
   // Fetch quotes
   const fetchQuotes = async (category = "") => {
@@ -35,7 +60,8 @@ const QuotesPage = () => {
         ? `${API_BASE}/quotes?category=${category}`
         : `${API_BASE}/quotes`;
       const res = await axios.get(url);
-      setQuotes(normalizeQuotes(res.data));
+      const normalized = normalizeQuotes(res.data);
+      setQuotes(sortQuotes(normalized));
     } catch (err) {
       console.error("❌ Fetch quotes failed:", err);
       setQuotes([]);
@@ -47,6 +73,11 @@ const QuotesPage = () => {
   useEffect(() => {
     fetchQuotes();
   }, []);
+
+  // Re-sort when sort option changes
+  useEffect(() => {
+    setQuotes((prev) => sortQuotes(prev));
+  }, [sortOption]);
 
   // Post quote
   const handlePostQuote = async (e) => {
@@ -73,24 +104,22 @@ const QuotesPage = () => {
     }
   };
 
-  // Like / Unlike
+  // Like quote
   const handleLike = async (quoteId) => {
     if (!user) return alert("Please login to like quotes!");
     try {
-      const res = await axios.put(
-        `${API_BASE}/quotes/${quoteId}/like`,
-        { userId: user.uid }
-      );
+      const res = await axios.put(`${API_BASE}/quotes/${quoteId}/like`, {
+        userId: user.uid,
+      });
 
       if (typeof res.data?.likesCount === "number") {
         setQuotes((prev) =>
-          prev.map((q) =>
-            q._id === quoteId
-              ? {
-                  ...q,
-                  likes: Array(res.data.likesCount).fill(user.displayName || "Anonymous"),
-                }
-              : q
+          sortQuotes(
+            prev.map((q) =>
+              q._id === quoteId
+                ? { ...q, likes: Array(res.data.likesCount).fill(user.displayName || "Anonymous") }
+                : q
+            )
           )
         );
       }
@@ -106,12 +135,10 @@ const QuotesPage = () => {
     fetchQuotes(cat);
   };
 
-  // Toggle quote expansion
+  // Toggle long quote
   const toggleExpand = (quoteId) => {
     setExpandedQuoteIds((prev) =>
-      prev.includes(quoteId)
-        ? prev.filter((id) => id !== quoteId)
-        : [...prev, quoteId]
+      prev.includes(quoteId) ? prev.filter((id) => id !== quoteId) : [...prev, quoteId]
     );
   };
 
@@ -149,8 +176,18 @@ const QuotesPage = () => {
         </form>
       </div>
 
-      {/* Filter */}
-      <div className="max-w-2xl mx-auto mb-6 flex justify-end">
+      {/* Filters & Sorting */}
+      <div className="flex justify-end gap-2 mb-6 max-w-2xl mx-auto">
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="p-3 rounded-lg border"
+        >
+          <option value="mostLiked">Most Liked</option>
+          <option value="newest">Newest</option>
+          <option value="trending">Trending</option>
+        </select>
+
         <select
           value={selectedCategory}
           onChange={handleCategoryFilter}
