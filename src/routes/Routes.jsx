@@ -7,11 +7,11 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Details from "../components/Details";
 import PrivateAddBook from "../pages/PrivateAddBook";
-import PrivateAllBooks from "../pages/PrivateAllBooks";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import PrivateMyList from "../pages/PrivateMyList";
 import MyList from "../pages/MyList";
+import QuotesPage from "../pages/QuotesPage";
 
 const router = createBrowserRouter([
   {
@@ -19,20 +19,18 @@ const router = createBrowserRouter([
     element: <Root></Root>,
     children: [
       {
-  path: "/",
-  element: <Home />,
-  loader: async () => {
-    const res = await fetch("https://amar-golpo-server.vercel.app/books");
-    if (!res.ok) throw new Error("Failed to fetch books for Home");
-    return res.json(); // this will be available as useLoaderData() in Home
-  },
-},
+        path: "/",
+        element: <Home />,
+        loader: async () => {
+          const res = await fetch("https://amar-golpo-server.vercel.app/books");
+          if (!res.ok) throw new Error("Failed to fetch books for Home");
+          return res.json();
+        },
+      },
       {
         path: "/storyverse",
         element: (
-          <PrivateAllBooks>
             <AllBooks></AllBooks>
-          </PrivateAllBooks>
         ),
         loader: () => fetch("https://amar-golpo-server.vercel.app/books"),
       },
@@ -79,7 +77,12 @@ const router = createBrowserRouter([
           return res.json();
         },
       },
+      {
+        path: "/quotes",
+        element: <QuotesPage />,
+      }
     ],
   },
 ]);
+
 export default router;

@@ -15,9 +15,9 @@ const Navbar = () => {
       <li>
         <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/shareStory">ShareStory</NavLink>
       </li>
-      {/* <li>
-        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/myList">My List</NavLink>
-      </li> */}
+      <li>
+        <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/quotes">Quotes</NavLink>
+      </li>
       <li>
         <NavLink className={({ isActive }) => (isActive ? "text-purple-600 font-bold" : "")} to="/about">About</NavLink>
       </li>

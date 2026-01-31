@@ -113,24 +113,6 @@ const Details = () => {
     setUserRating(ratingValue);
   };
 
-  // 🧠 Analyze Story
-  const handleAnalyzeStory = async () => {
-    if (!message || !message.trim()) return alert("No story content to analyze!");
-
-    setLoadingAnalysis(true);
-    try {
-      const response = await axios.post("http://localhost:5000/analyze-text", {
-        text: message,
-      });
-      setAnalysisResult(response.data.analysis || "No analysis result.");
-    } catch (error) {
-      console.error(error);
-      setAnalysisResult("Error analyzing the story.");
-    } finally {
-      setLoadingAnalysis(false);
-    }
-  };
-
   return (
     <div className="container mx-auto py-12 px-4">
       {/* Top Image */}
@@ -280,7 +262,7 @@ const Details = () => {
             </div>
 
             {/* Analyze Story Section */}
-            <div>
+            {/* <div>
               <button
                 onClick={handleAnalyzeStory}
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-2xl shadow-md transition-transform hover:scale-105 font-semibold mt-4"
@@ -293,7 +275,7 @@ const Details = () => {
                   <pre className="whitespace-pre-wrap">{analysisResult}</pre>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 
