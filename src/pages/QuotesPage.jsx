@@ -1,4 +1,3 @@
-// src/pages/QuotesPage.jsx
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
